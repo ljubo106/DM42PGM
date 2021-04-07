@@ -43,10 +43,11 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #ifndef __PGM_MAIN_H__
 #define __PGM_MAIN_H__
 
-#define PROGRAM_NAME    "DM42PGM"
+#define PROGRAM_NAME    "DM42pcm"
 #define DM42_VERSION    "3.18b2"
 #define F42_VERSION     "3.0.1"
-#define PROGRAM_VERSION DM42_VERSION "/" F42_VERSION
+#define DM42pcm_VERSION DM42_VERSION ".1"
+#define PROGRAM_VERSION DM42pcm_VERSION "/" F42_VERSION
 
 // Disable printf traces for release build
 //#define DBG_PRINT

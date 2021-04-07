@@ -153,6 +153,21 @@ int lcd_for_dm42(int what) {
       lcd_puts(t24, "  Press any key to continue...");
       break;
 
+    case DISP_ABOUT_PCM:
+      lcd_putsR(t24, "Persistent Custom Menu");
+      lcd_putsR(t24, "Firmware modification");
+      lcd_setXY(t20, t24->x, t24->y);
+      lcd_puts(t20, "");
+      lcd_puts(t20, "Version " DM42pcm_VERSION);
+      lcd_puts(t20, "");
+      lcd_puts(t20, "https://github.com/ljubo106/DM42pcm");
+      lcd_puts(t20, "");
+      lcd_puts(t20, "This version of the firmware is neither");
+      lcd_puts(t20, "provided by nor supported by SwissMicros");
+      t20->y = LCD_Y - lcd_lineHeight(t20);
+      lcd_putsR(t20, "    Press EXIT key to continue...");
+      break;
+
     case DISP_ABOUT:
       // Just base of original system about
       lcd_for_calc(DISP_ABOUT);
@@ -173,7 +188,6 @@ int lcd_for_dm42(int what) {
       t20->y = LCD_Y - lcd_lineHeight(t20);
       lcd_putsR(t20, "    Press EXIT key to continue...");
       break;
-
   }
 
   if (refresh)
@@ -699,6 +713,7 @@ const uint8_t mid_menu[] = {
     MI_SETTINGS,
     MI_SYSTEM_ENTER,
     MI_ABOUT_PGM,
+    MI_ABOUT_PCM,
     0 }; // Terminator
 
 
@@ -954,6 +969,11 @@ int run_menu_item(uint8_t line_id) {
     wait_for_key_press();
     break;
 
+  case MI_ABOUT_PCM:
+    lcd_for_dm42(DISP_ABOUT_PCM);
+    wait_for_key_press();
+    break;
+
    default:
     ret = MRET_UNIMPL;
     break;
@@ -1054,6 +1074,7 @@ const char * menu_line_str(uint8_t line_id, char * s, const int slen) {
 
   case MI_SETTINGS:     ln = "Settings >";           break;
   case MI_ABOUT_PGM:    ln = "About >";              break;
+  case MI_ABOUT_PCM:    ln = "About firmware mod >"; break;
 
   case MI_STACK_AREA:   ln = "Stack Font Sizes >";         break;
   case MI_SA_REG_X:     ln = nr_str(s, "Font Size Offset Reg X", get_reg_font_offset(LINE_REG_X) ); break;
