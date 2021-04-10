@@ -228,8 +228,6 @@ int lcd_toggleFontT(int nr);
 #define DISP_PROD_DIAG          23
 #define DISP_POWER_CHECK        24
 #define DISP_FLASH_CONNECT_USB  26
-
-#define DISP_ABOUT_PCM          88
 // ----
 
 

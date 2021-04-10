@@ -153,21 +153,6 @@ int lcd_for_dm42(int what) {
       lcd_puts(t24, "  Press any key to continue...");
       break;
 
-    case DISP_ABOUT_PCM:
-      lcd_putsR(t24, "Persistent Custom Menu");
-      lcd_putsR(t24, "Firmware modification");
-      lcd_setXY(t20, t24->x, t24->y);
-      lcd_puts(t20, "");
-      lcd_puts(t20, "Version " DM42pcm_VERSION);
-      lcd_puts(t20, "");
-      lcd_puts(t20, "https://github.com/ljubo106/DM42pcm");
-      lcd_puts(t20, "");
-      lcd_puts(t20, "This version of the firmware is neither");
-      lcd_puts(t20, "provided by nor supported by SwissMicros");
-      t20->y = LCD_Y - lcd_lineHeight(t20);
-      lcd_putsR(t20, "    Press EXIT key to continue...");
-      break;
-
     case DISP_ABOUT:
       // Just base of original system about
       lcd_for_calc(DISP_ABOUT);
@@ -188,6 +173,7 @@ int lcd_for_dm42(int what) {
       t20->y = LCD_Y - lcd_lineHeight(t20);
       lcd_putsR(t20, "    Press EXIT key to continue...");
       break;
+
   }
 
   if (refresh)
@@ -196,6 +182,27 @@ int lcd_for_dm42(int what) {
   return t24->y;
 }
 
+
+void display_about_pcm()
+{
+  lcd_clear_buf();
+  lcd_writeClr(t24);
+
+  lcd_putsR(t24, "Persistent Custom Menu");
+  lcd_putsR(t24, "Firmware modification");
+  lcd_setXY(t20, t24->x, t24->y);
+  lcd_puts(t20, "");
+  lcd_puts(t20, "Version " DM42pcm_VERSION);
+  lcd_puts(t20, "");
+  lcd_puts(t20, "https://github.com/ljubo106/DM42pcm");
+  lcd_puts(t20, "");
+  lcd_puts(t20, "This version of the firmware is neither");
+  lcd_puts(t20, "provided by nor supported by SwissMicros");
+  t20->y = LCD_Y - lcd_lineHeight(t20);
+  lcd_putsR(t20, "    Press EXIT key to continue...");
+
+  lcd_refresh();
+}
 
 
 
@@ -970,7 +977,7 @@ int run_menu_item(uint8_t line_id) {
     break;
 
   case MI_ABOUT_PCM:
-    lcd_for_dm42(DISP_ABOUT_PCM);
+    display_about_pcm();
     wait_for_key_press();
     break;
 
