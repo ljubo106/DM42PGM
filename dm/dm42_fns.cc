@@ -3830,7 +3830,7 @@ void program_main() {
           break;
         
         case KEY_F3:
-	    core_dm42f3();
+          core_dm42f3();
           break;
 
         case KEY_F4:
