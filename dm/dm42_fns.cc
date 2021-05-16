@@ -3830,7 +3830,13 @@ void program_main() {
           break;
         
         case KEY_F3:
-          core_dm42f3();
+          if( ANN(SHIFT) ) {
+              core_toggle_persistent_custom_menu();
+          } else {
+              if( !ANN(RUN) ) {
+                  core_dm42f3();
+              }
+          }
           break;
 
         case KEY_F4:
