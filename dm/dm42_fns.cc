@@ -3869,7 +3869,7 @@ void program_main() {
         
         case KEY_F3:
           if( ANN(SHIFT) ) {
-              core_toggle_persistent_custom_menu();
+              core_pcm_set(!core_pcm_get()); // Toggle Persistent Custom Menu (PCM)
           } else {
               if( !ANN(RUN) ) {
                   core_dm42f3();

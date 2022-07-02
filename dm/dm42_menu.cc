@@ -720,7 +720,7 @@ const uint8_t mid_menu[] = {
     MI_SETTINGS,
     MI_SYSTEM_ENTER,
     MI_ABOUT_PGM,
-    MI_ABOUT_PCM,
+    MI_PCM_MOD,
     0 }; // Terminator
 
 
@@ -794,6 +794,18 @@ const uint8_t mid_stack[] = {
     0 }; // Terminator
 
 
+const uint8_t mid_pcm_mod[] = {
+    MI_PCM_ACTIVE,
+    MI_PCM_SHIFT_CONF,
+    MI_PCM_ABOUT,
+    0 }; // Terminator
+
+
+const uint8_t mid_pcm_shift_conf[] = {
+    MI_PCM_SHIFT_NONE,
+    MI_PCM_SHIFT_UP,
+    MI_PCM_SHIFT_DOWN,
+    0 }; // Terminator
 
 
 int stack_menu_index() {
@@ -826,6 +838,8 @@ const smenu_t MID_STACK_CONFIG = { "Stack Layout", mid_stack, NULL, NULL};
 const smenu_t    MID_STATEFILE = { "Calculator State", mid_statefile, NULL, NULL};
 const smenu_t       MID_TOPBAR = { "Status Bar", mid_topbar, NULL, NULL};
 const smenu_t   MID_STACK_AREA = { "Stack Area", mid_stack_area, NULL, NULL};
+const smenu_t        MID_PCM_MOD = { "Persistent Custom Menu", mid_pcm_mod, NULL, NULL};
+const smenu_t MID_PCM_SHIFT_CONF = { "PCM Shift Configuration", mid_pcm_shift_conf, NULL, NULL};
 
 
 // ----------------------------------------------------------------------------------
@@ -970,16 +984,41 @@ int run_menu_item(uint8_t line_id) {
   case MI_SA_REG_L:  inc_reg_font_offset(LINE_REG_L); break;
   case MI_SA_REG_A:  inc_reg_font_offset(LINE_REG_A); break;
 
+  /* PCM */
+  case MI_PCM_MOD:
+    ret = handle_menu(&MID_PCM_MOD,MENU_ADD, 0);
+    break;
+
+  case MI_PCM_ACTIVE:
+    core_pcm_set(!core_pcm_get());
+    break;
+
+  case MI_PCM_SHIFT_CONF:
+    ret = handle_menu(&MID_PCM_SHIFT_CONF,MENU_ADD, 0);
+    break;
+
+  case MI_PCM_SHIFT_NONE:
+    core_pcm_shift_set(PCM_SHIFT_NONE);
+    break;
+
+  case MI_PCM_SHIFT_UP:
+    core_pcm_shift_set(PCM_SHIFT_UP);
+    break;
+
+  case MI_PCM_SHIFT_DOWN:
+    core_pcm_shift_set(PCM_SHIFT_DOWN);
+    break;
+
+  case MI_PCM_ABOUT:
+    display_about_pcm();
+    wait_for_key_press();
+    break;
 
   case MI_ABOUT_PGM:
     lcd_for_dm42(DISP_ABOUT);
     wait_for_key_press();
     break;
 
-  case MI_ABOUT_PCM:
-    display_about_pcm();
-    wait_for_key_press();
-    break;
 
    default:
     ret = MRET_UNIMPL;
@@ -1081,7 +1120,6 @@ const char * menu_line_str(uint8_t line_id, char * s, const int slen) {
 
   case MI_SETTINGS:     ln = "Settings >";           break;
   case MI_ABOUT_PGM:    ln = "About >";              break;
-  case MI_ABOUT_PCM:    ln = "About firmware mod >"; break;
 
   case MI_STACK_AREA:   ln = "Stack Font Sizes >";         break;
   case MI_SA_REG_X:     ln = nr_str(s, "Font Size Offset Reg X", get_reg_font_offset(LINE_REG_X) ); break;
@@ -1097,6 +1135,14 @@ const char * menu_line_str(uint8_t line_id, char * s, const int slen) {
   case MI_PRTOF_NOIR:      ln = opt_str(s, " Don't print to IR", is_print_to_file(PRTOF_NOIR));      break;
   case MI_PRTOF_GR_IN_TXT: ln = opt_str(s, " Graphics in Text",  is_print_to_file(PRTOF_GR_IN_TXT)); break;
   case MI_PRINT_DBLNL:     ln = opt_str(s, " Double Newline",    is_print_to_file(PRINT_DBLNL));     break;
+
+  case MI_PCM_MOD:        ln = "PCM firmware mod >";                                                        break;
+  case MI_PCM_ACTIVE:     ln = opt_str(s, " PCM Active",           core_pcm_get() );                        break;
+  case MI_PCM_SHIFT_CONF: ln = "Shift configuration >";                                                     break;
+  case MI_PCM_SHIFT_NONE: ln = orb_str(s, " PCM Shift None",       core_pcm_shift_get() == PCM_SHIFT_NONE); break;
+  case MI_PCM_SHIFT_UP:   ln = orb_str(s, " PCM Shift Arrow Up",   core_pcm_shift_get() == PCM_SHIFT_UP);   break;
+  case MI_PCM_SHIFT_DOWN: ln = orb_str(s, " PCM Shift Arrow Down", core_pcm_shift_get() == PCM_SHIFT_DOWN); break;
+  case MI_PCM_ABOUT:      ln = "About >";                                                                   break;
 
   default:
     ln = NULL;
