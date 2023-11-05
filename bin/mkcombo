@@ -1,0 +1,96 @@
+#!/bin/bash
+
+#
+# See: https://github.com/swissmicros/DMCP_SDK/blob/master/keymap_utils/README.md
+#
+
+if [[ $# != 4 ]]
+then
+	echo "Usage:  mkcombo <dmcp file> <dm42 file> <dmcp version x.yy> <combo file>"
+	exit
+fi
+
+if [[ ! -f $1 || $1 != *.bin ]]
+then
+	echo "Error! File $1 doesn't exist or is not a bin file"
+	exit
+fi
+
+if [[ ! -f $2 || $2 != *.pgm ]]
+then
+	echo "Error! File $2 doesn't exist or is not a pgm file"
+	exit
+fi
+
+if [[ -f $4 ]]
+then
+	echo "Error! File $4 exists"
+	exit
+fi
+
+if [[ ${#3} -gt 12 ]]
+then
+    echo "Error! Version string longer than char[12]"
+    exit
+fi
+
+
+# Convert hex digits to uint32_t
+toint() {
+	local x
+	x=`printf "%08x" "0x$1" |
+		sed -e 's|\(..\)|\1@|g' | tr '@' '\012' | tac | tr -d '\012' |
+		sed -e 's|\(..\)|@\1|g' | sed -e 's|@|\\\x|g'`
+	printf "$x"
+}
+
+#
+# Add DMCP fw file
+#
+cat $1 > $4
+
+#
+# Pad with zeros till 0x4FFFF
+#
+N_pad=$(stat -c "%s" $4 | awk '{print 0x50000-$1}')
+dd if=/dev/zero bs=1 count=$N_pad status=none >> $4
+
+#
+# Add PGM bin file
+#
+cat $2 >> $4
+
+#
+# Pad with FF so that file size is rounded to 0x800 (2048 = 2kB)"
+#
+N_pad=$(stat -c "%s" $4 | awk '{N=or($1,0x7ff)-$1-24+1; if(N<0) N+=0x800; print N;}')
+LC_ALL="C" dd if=/dev/zero bs=1 count=$N_pad status=none | tr '\000' '\377' >> $4
+
+#
+# Calculate crc
+#
+crc=$(crc32 $4)
+
+#
+# Append char[4]: SMFW (0x57464D53)
+#
+LC_ALL="C" echo -en "SMFW" >> $4
+
+#
+# Append char[4]: 0xEEE142D3 (DMCP+PGM Combo ID) 
+#
+LC_ALL="C" echo -en "\xD3\x42\xE1\xEE" >> $4
+
+#
+# Append char[12]: PGM Version string
+#
+verstr="$3"
+verstrlen=${#verstr}
+N_pad=$((12-$verstrlen))
+LC_ALL="C" echo -n $verstr >> $4
+dd if=/dev/zero bs=1 count=$N_pad status=none >> $4
+
+#
+# Append CRC
+#
+toint $crc >> $4
