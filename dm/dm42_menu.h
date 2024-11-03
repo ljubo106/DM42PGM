@@ -111,6 +111,14 @@ extern const smenu_t   MID_STACK_AREA; // Stack area config
 
 #define MI_DYNSTACKEXT     67
 
+#define MI_PCM_MOD         82
+#define MI_PCM_ACTIVE      83
+#define MI_PCM_SHIFT_CONF  84
+#define MI_PCM_SHIFT_NONE  85
+#define MI_PCM_SHIFT_UP    86
+#define MI_PCM_SHIFT_DOWN  87
+#define MI_PCM_ABOUT       88
+
 // --------------------------------
 
 #define MRET_SAVESTATE   777
